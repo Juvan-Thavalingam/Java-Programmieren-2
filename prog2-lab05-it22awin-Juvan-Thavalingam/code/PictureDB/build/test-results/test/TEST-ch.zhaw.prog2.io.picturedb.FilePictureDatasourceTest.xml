@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-05-09T17:07:56" hostname="LAPTOP-3V8LK7IN" time="0.333">
+  <properties/>
+  <testcase name="findByPosition()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.039"/>
+  <testcase name="findByIdInexistent()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.006"/>
+  <testcase name="delete()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.029"/>
+  <testcase name="insert()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.014"/>
+  <testcase name="findAll()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.009"/>
+  <testcase name="update()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.136"/>
+  <testcase name="findById()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.019"/>
+  <testcase name="updateNull()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.009"/>
+  <testcase name="count()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.008"/>
+  <testcase name="deleteInexistent()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.01"/>
+  <testcase name="updateInexistent()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.012"/>
+  <testcase name="insertNull()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.011"/>
+  <testcase name="deleteNull()" classname="ch.zhaw.prog2.io.picturedb.FilePictureDatasourceTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

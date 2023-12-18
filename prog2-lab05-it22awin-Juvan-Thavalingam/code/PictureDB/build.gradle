@@ -1,0 +1,68 @@
+/*
+ * Gradle build configuration for specific lab module / exercise
+ */
+// enabled plugins
+plugins {
+    id 'java'
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+}
+
+// Project/Module information
+description = 'Lab05 PictureDB'
+group = 'ch.zhaw.prog2'
+version = '2023'
+
+// Dependency configuration
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Junit 5 dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.+'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.+'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.+'
+}
+
+// Test task configuration
+test {
+    // Use JUnit platform for unit tests
+    useJUnitPlatform()
+    // Output results of individual tests
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED"
+    }
+}
+
+// Configuration for Application plugin
+application {
+    // Define the main class for the application.
+    mainClass = 'ch.zhaw.prog2.io.picturedb.PictureImport'
+}
+
+// Run task configuration
+run {
+    // enable console input when running with gradle
+    standardInput = System.in
+    // set system property to load log configuration using class (takes precedence; if not set or fails, file is used)
+    systemProperty 'java.util.logging.config.class', 'ch.zhaw.prog2.io.picturedb.LogConfiguration'
+    // set system property to load log configuration from properties
+    systemProperty 'java.util.logging.config.file', 'log.properties'
+}
+
+
+// Java plugin configuration
+java {
+    // By default the Java version of the gradle process is used as source/target version.
+    // This can be overridden, to ensure a specific version. Enable only if required.
+    // sourceCompatibility = JavaVersion.VERSION_17 // ensure Java source code compatibility
+    // targetCompatibility = JavaVersion.VERSION_17 // version of the created byte-code
+
+    // Java compiler specific options
+    compileJava {
+        // source files should be UTF-8 encoded
+        options.encoding = 'UTF-8'
+        // for more options see https://docs.gradle.org/current/dsl/org.gradle.api.tasks.compile.CompileOptions.html
+    }
+}
