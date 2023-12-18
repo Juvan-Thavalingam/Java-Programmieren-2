@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ch.zhaw.prog2.heartbeat.HeartTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-04-26T19:16:14" hostname="LAPTOP-3V8LK7IN" time="0.406">
+  <properties/>
+  <testcase name="testValvesBehavior()" classname="ch.zhaw.prog2.heartbeat.HeartTest" time="0.406"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
