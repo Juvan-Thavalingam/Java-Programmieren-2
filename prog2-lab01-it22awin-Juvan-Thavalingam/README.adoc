@@ -1,0 +1,276 @@
+:source-highlighter: rouge
+:rouge-style: github
+:icons: font
+:experimental:
+:!sectnums:
+:doctype: article
+:title-separator: -
+:chapter-signifier: Teil
+:imagesdir: ./images/
+:handout: ./code/
+
+:logo: IT.PROG2 -
+ifdef::backend-html5[]
+:logo: image:PROG2-300x300.png[IT.PROG2,100,100,role=right,fit=none,position=top right]
+endif::[]
+ifdef::backend-pdf[]
+:logo:
+:title-logo-image: image:PROG2-300x300.png[IT.PROG2,pdfwidth=4cm,fit=none,position=top right]
+endif::[]
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+= {logo} Praktikum Concurrency - Execution
+:author: @ZHAW Init
+:revnumber: FS2023
+:revdate: {docdate}
+:module: Programmieren 2 – IT.PROG2
+
+== Einleitung
+
+Ziele dieses Praktikums sind:
+
+* Sie verstehen die Grundlagen von Nebenläufigkeit
+* Sie können mehrere Java-Threads starten, kontrollieren und sauber beenden.
+* Sie können das Zustandsmodell von Threads erklären und wissen, welche Mechanismen den Wechsel der Zustände veranlassen.
+* Sie können das Java Executor Framework zum Ausführen von nebenläufigen Tasks praktisch anwenden.
+
+
+=== Voraussetzungen
+* Vorlesung Concurrency - Execution 1 und 2
+
+=== Tooling
+
+* Installiertes JDK 17+
+* Gradle 7.6+
+
+=== Struktur
+
+Ein Praktikum kann verschiedene Arten von Aufgaben enthalten, die wie folgt gekennzeichnet sind:
+
+[TU] – Theoretische Übung::
+Dient der Repetition bzw. Vertiefung des Stoffes aus der Vorlesung und als Vorbereitung für die nachfolgenden Übungen.
+
+[PU] – Praktische Übung::
+Übungsaufgaben zur praktischen Vertiefung von Teilaspekten des behandelten Themas.
+
+[PA] – Pflichtaufgabe::
+Übergreifende Aufgabe zum Abschluss. Das Lösen dieser Aufgaben ist Pflicht.
+Sie muss bis zum definierten Zeitpunkt abgegeben werden, wird bewertet und ist Teil der Vornote.
+
+=== Zeit und Bewertung
+
+Für dieses Praktikum stehen 2 Wochen in den Praktikumslektionen und im Selbststudium zur Verfügung. +
+Je nach Kenntniss- und Erfahrungsstufe benötigen Sie mehr oder weniger Zeit.
+Nutzen Sie die Gelegenheit den Stoff zu vertiefen, auszuprobieren, Fragen zu stellen und Lösungen zu diskutieren (Intensive-Track). +
+Falls Sie das Thema schon beherrschen, müssen Sie nur die Pflichtaufgaben lösen und bis zum angegebenen Zeitpunkt abgeben (Fast-Track).
+
+Die Pflichtaufgabe wird mit 0 bis 2 Punkten bewertet (siehe _Leistungsnachweise_ auf Moodle).
+
+=== Referenzen
+
+* link:{handout}[Praktikumsverzeichnis – Quellcode, Projektstruktur]
+
+:sectnums:
+:sectnumlevels: 2
+// Beginn des Aufgabenblocks
+
+<<<
+== Concurrency 1 -- Java Threads
+
+=== Theoretische Fragen [TU]
+
+[loweralpha]
+. Im Unterricht haben Sie zwei Varianten kennengelernt, um Threads zu erzeugen. Erläutern Sie jeweils, was für die Implementation spezifisch ist und wie die Thread-Instanz erzeugt und gestartet wird.
+. Erläutern Sie im nachfolgenden (vereinfachten) Thread-Zustandsmodell, was die aufgeführten Zustände bedeuten und ergänzen Sie die Mechanismen, welche den Wechsel zwischen den Zuständen auslösen. Wenn vorhanden, geben Sie den entsprechenden Befehl an.
++
+.Thread Zustandsmodell (vereinfacht)
+image::Thread-State-Model.png[pdfwidth=80%, width=900px]
+
+=== Printer-Threads: Verwendung von Java Threads [PU]
+
+Nachfolgend einige Basisübungen zum Starten und Stoppen von Threads in Java.
+
+[source, Java]
+----
+public class Printer {
+
+    // test program
+    public static void main(String[] arg) {
+        PrinterThread a = new PrinterThread("PrinterA", '.', 10);
+        PrinterThread b = new PrinterThread("PrinterB", '*', 20);
+        a.start();
+        b.start();
+        b.run(); // wie kann das abgefangen werden?
+    }
+
+
+    private static class PrinterThread extends Thread {
+        char symbol;
+        int sleepTime;
+
+        public PrinterThread(String name, char symbol, int sleepTime) {
+            super(name);
+            this.symbol = symbol;
+            this.sleepTime = sleepTime;
+        }
+
+        public void run() {
+            System.out.println(getName() + " run started...");
+            for (int i = 1; i < 100; i++) {
+                System.out.print(symbol);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            System.out.println('\n' + getName() + " run ended.");
+        }
+    }
+}
+----
+
+[loweralpha]
+. Studieren Sie das Programm `Printer.java`: Die Methode `Thread.run()` ist
+public und kann daher direkt aufgerufen werden. Erweitern Sie die Methode `run()`
+so, dass diese sofort terminiert, wenn sie direkt und nicht vom Thread
+aufgerufen wird.
++
+[TIP]
+Was liefert die Methode `Thread.currentThread()` zurück?
+
+. Erstellen sie eine Kopie von `Printer.java` (z.B. `PrinterB.java`) und schreiben Sie das Programm so um, dass die run-Methode über das Interface
+`Runnable` implementiert wird.
++
+Führen Sie dazu eine Klasse `PrinterRunnable` ein, die das Interface `Runnable`
+implementiert. +
+Starten Sie zwei Threads, sodass dieselbe Ausgabe entsteht wie bei (a). Dabei lassen Sie die Erkennung, ob `run()` direkt aufgerufen wurde, weg.
+. Entfernen Sie die `sleep`-Anweisung. Typischerweise wird jetzt der eine Tasks komplett ausgeführt und dann der andere Task.
+Wie kann nun erreicht werden, dass die Fairness erhöht wird, d.h. dass der Wechsel zwischen den Threads häufiger erfolgt? +
+*Hinweis*: Je nach Rechner kann der Effekt nicht immer sichtbar sein.
+. Wie muss man das Hauptprogramm anpassen, damit der Main-Thread immer als letzter Thread endet?
+
+
+== Concurrency 2 -- Executor Framework, Callables and Futures
+
+=== Theoretische Fragen [TU]
+
+Im Unterricht haben sie verschieden Arten von Thread-Pools kennengelernt.
+Welcher davon würde sich für den jeweiligen folgend Anwendungsfall am besten eignen? +
+Wenn nötig, geben Sie auch die Konfiguration des Thread-Pools an.
+
+[loweralpha]
+. Sie schreiben einen Server, der via Netzwerk Anfragen erhält. Jede Anfrage soll in einem eigenen Task beantwortet werden. Die Anzahl gleichzeitiger Anfragen schwankt über den Tag verteilt stark.
+. Ihr Grafikprogramm verwendet komplexe Mathematik um von hunderten von Objekten die Position, Geschwindigkeit und scheinbare Grösse (aus Sicht des Betrachters) zu berechnen und auf dem Bildschirm darzustellen.
+. Je nach Datenset sind unterschiedliche Algorithmen schneller in der Berechnung des Resultats (z.B. Sortierung). Sie möchten jedoch in jedem Fall immer so schnell wie möglich das Resultat haben und lassen deshalb mehrere Algorithmen parallel arbeiten.
+
+=== Prime Checker [PU]
+
+In dieser Aufgabe üben sie die Verwendung des Java Executor Frameworks zum Ausführen von mehreren unabhängigen Aufgaben (Tasks).
+Mit der Wahl des Typs und der Konfiguration des ExecutorServices, bestimmen Sie auch ob und wie diese Tasks parallel d.h. in Threads ablaufen.
+
+Im link:{handout}[Praktikumsverzeichnis] finden sie das Modul `PrimeChecker`.
+Die Anwendung testet für eine Menge an zufälligen grossen Zahlen, ob es sich dabei um eine Primzahl handelt, indem es Brute-Force nach dem kleinstmöglichen Faktor (>1) sucht, durch den die Zahl ganzzahlig geteilt werden kann.
+
+Die Klasse 'PrimeChecker' enthält die Hauptanwendung, welche in einer Schleife zufällige Zahlen erzeugt und testet.
+Die Verifizierung, ob es sich um eine Primzahl handelt, ist in die Klasse `PrimeTask` ausgelagert, welche bereits `Runnable` implementiert.
+In der ausgelieferten Form wird jedoch alles im `main`-Thread ausgeführt.
+
+[loweralpha]
+. Studieren und testen Sie `PrimeChecker`. +
+  Wie lange dauert die Analyse der Zahlen aktuell?
+. Erweitern Sie `PrimeChecker` damit für jede Analyse (`PrimeTask`-Instanz) mit `new` ein eigener Thread gestartet wird. +
+[arabic]
+.. Wie lange dauert die Analyse jetzt?
+.. Wie viele Threads werden gestartet?
+
+Im nächsten Schritt soll für das Ausführen der `PrimeTask`-Instanzen ein ExecutorService verwendet werden.
+
+[loweralpha, start=3]
+. Ergänzen Sie die Klasse `PrimeCheckerExecutor` so, dass für das Thread-Management jetzt vom ExecutorService erledigt wird.
+  Als Unterstützung sind entsprechende `TODO:` Kommentare enthalten. +
+[arabic]
+.. Welche(r) Thread-Pool-Typ(en) eignet sich für diese Aufgabe?
+.. Wie gross sollte der Thread-Pool sein, um das beste Ergebnis zu erzeugen? +
+  Testen Sie mit unterschiedlichen Pool-Typen und Grössen.
+. Stellen Sie sicher, dass der `ExecutorService` am Schluss korrekt heruntergefahren wird.
+[arabic]
+.. Wie viele Threads werden jetzt gestartet?
+.. Was sehen sie bei den Laufzeiten?
+
+Im Moment wird das Resultat nur auf der Konsole ausgegeben, da `Runnable` kein Resultat zurückgeben können.
+Im nächsten Schritt soll die Anwendung so umgebaut werden, dass die Berechnung in einem Callable passiert und das Resultat im Hauptprogramm verarbeitet (in unserem Fall nur ausgegeben) wird.
+
+[loweralpha, start=5]
+. Ergänzen Sie die Klasse `PrimeTaskCallable` so, dass das Resultat der Berechnung zurückgegeben wird. +
+  Da die Berechnung asynchron erfolgt, können Sie im Hauptprogramm das Resultat nicht mehr so einfach der Zahl zuordnen, für welche die Berechnung gestartet wurde. Deshalb muss im Resultat neben dem Faktor auch die zugehörige Zahl enthalten sein. Dazu können Sie die innere statische Klasse `PrimeTaskCallable.Result` verwenden.
+. Vervollständigen sie das Hauptprogramm in der Klasse `PrimeCheckerFuture`, welches nun `PrimeTaskCallable` verwenden soll. +
+  Das Resultat soll, wie bei `PrimeChecker`, auf der Konsole ausgegeben werden. Jetzt jedoch im Hauptprogramm.
+[TIP]
+  Beachten Sie, dass das Übermitteln des Tasks an den `ExecutorService` unmittelbar ein Objekt vom Typ `Future` zurückgeliefert, in welchem das Resultat nach Beendigung des Tasks abgelegt wird. +
+  Um auf das Resultat zuzugreifen, ohne die Übermittlung des nächsten Tasks zu blockieren, müssen sie dieses `Future`-Objekt zwischenspeichern (z.B. in einer Liste). +
+  Später können sie die Resultate aus der Liste durchgehen und weiterverarbeiten, was in unserem Fall die Ausgabe auf der Konsole ist.
+
+. Merken Sie einen Unterschied in den Berechnungszeiten oder im Verhalten der Ausgabe? Wenn ja, warum könnte das so sein?
+
+== Bewertete Pflichtaufgaben
+
+=== Mandelbrot [PA]
+
+Die JavaFX-Anwendung `Mandelbrot` berechnet die Fraktaldarstellung eines Ausschnitts aus der https://de.wikipedia.org/wiki/Mandelbrot-Menge[Mandelbrot-Menge].
+Dazu wird die zeilenweise Berechnung auf mehrere Threads aufgeteilt.
+
+[NOTE]
+Sie müssen die Mathematik hinter den Mandelbrotfraktalen nicht verstehen, um die Aufgaben zu lösen.
+
+[TIP]
+Starten Sie die Anwendung mittels `gradle run` im Verzeichnis `Code/Mandelbrot` bzw. in der IDE mit dem Gradle run task.
+Es kann sein, dass sie eine Fehlermeldung kriegen, wenn Sie die Mandelbrot-Klasse direkt in der IDE starten. Das ist ein bekanntes JavaFX-Problem.
+
+Im GUI können Sie auswählen, wie viele Threads verwendet werden sollen. Zudem können Sie die Processor-Klasse wählen, die verwendet werden soll. Es gibt 3 Varianten:
+
+* **`MandelbrotTaskProcessor`**:  Verwendet ein Array von Worker-Threads, die "konventionell" erzeugt und beendet werden. Das Fenster wird in so viel horizontale Bereiche (startRow ... endRow) aufgeteilt, wie Threads zur Verfügung stehen. Jeder Thread berechnet seinen zugewiesenen Zeilenbereich. +
+Dieser Processor ist bereits umgesetzt.
+* **`MandelbrotExecutorProcessor`**: Hier soll ein `ExecutorService` für das Management der Threads verwendet werden. `MandelbrotTask` soll als `Runnable` implementiert werden, das genau eine Zeile berechnet und diese dem GUI zur Ausgabe übergibt (`processorListener.rowProcessed(row)`). Es müssen also so viele Tasks erzeugt werden, wie das Fenster Zeilen hat (`height`). +
+Das Grundgerüst der Klasse ist bereits vorhanden. Der ExecutorService muss ergänzt und `MandelbrotTask`-Klasse angepasst werden.
+* **`MandelbrotCallableProcessor`**: Hier soll wiederum ein `ExecutorService` verwendet werden. Diesmal aber soll der `MandelbrotTask` als Callable umgesetzt werden, der jeweils eine Zeile als `Future<ImageRow>` zurückgibt.
+Diese werden gesammelt und sobald verfügbar Zeilenweise ans GUI zur Ausgabe übergeben (`processorListener.rowProcessed(row)`). +
+Das Grundgerüst der Klasse ist bereits vorhanden. Der ExecutorService muss ergänzt und `MandelbrotTask`-Klasse angepasst werden.
+
+Das Thread-Handling ist in die `MandelbrotProcessor`-Klassen im Package `ch.zhaw.prog2.mandelbrot.processors` ausgelagert.
+Sie müssen nur diese Klassen bearbeiten. Die Benutzeroberfläche und Hilfsklassen sind im übergeordneten
+Package `ch.zhaw.prog2.mandelbrot` enthalten und müssen nicht angepasst werden.
+
+Analysieren und testen Sie die Anwendung:
+[loweralpha]
+. Mit welcher Anzahl Threads erhalten Sie auf Ihrem Rechner die besten Resultate? +
+[TIP]
+Die Gesamtrechenzeit wird in der Konsole ausgegeben.
+
+. Wie interpretieren Sie das Resultat im Verhältnis zur Anzahl Cores ihres Rechners?
+
+==== Aufgabe
+
+Ergänzen Sie die Klassen `MandelbrotExecutorProcessor` und `MandelbrotCallableExecutor`, sowie die jeweiligen
+inneren Klassen `MandelbrotTask`, sodass diese die obige Beschreibung erfüllen.
+
+==== Hinweise:
+
+* Die Stellen die angepasst werden müssen sind mit TODO-Kommentaren versehen.
+* Überlegen Sie sich, welchen Typ von Thread-Pool hier sinnvollerweise verwendet wird.
+* Verwenden Sie den vom Benutzer gesetzten ThreadCount um die Grösse des Thread-Pools zu definieren.
+* Neu soll der `MandelbrotTask` nur noch eine Zeile berechnen und ausgeben.
+* Überlegen Sie sich welche Optionen Sie haben, um auf die Resultate zu warten und sicherzustellen, dass alle ausgegeben wurden.
+
+// Ende des Aufgabenblocks
+:!sectnums:
+// == Aufräumarbeiten
+== Abschluss
+
+Stellen Sie sicher, dass die Pflichtaufgaben mittels `gradle run` gestartet werden können und pushen Sie die Lösung vor der Deadline in Ihr Abgaberepository.
