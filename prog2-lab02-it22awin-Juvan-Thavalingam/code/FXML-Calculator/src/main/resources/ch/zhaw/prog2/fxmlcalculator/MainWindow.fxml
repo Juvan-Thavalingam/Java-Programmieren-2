@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleKeyOnPressed" prefHeight="460.0" prefWidth="580.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ch.zhaw.prog2.fxmlcalculator.MainWindowController">
+   <children>
+      <VBox layoutX="8.0" layoutY="77.0" prefHeight="158.0" prefWidth="130.0">
+         <children>
+            <Label prefHeight="26.0" prefWidth="100.0" text="Initial amount">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label prefHeight="26.0" prefWidth="100.0" text="Return rate in %">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label prefHeight="26.0" prefWidth="100.0" text="Annual cost">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label prefHeight="26.0" prefWidth="110.0" text="Number of years">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox layoutX="154.0" layoutY="77.0" prefHeight="104.0" prefWidth="155.0">
+         <children>
+            <TextField fx:id="amountId" />
+            <TextField fx:id="rateId" />
+            <TextField fx:id="costId" />
+            <TextField fx:id="yearId" />
+         </children>
+      </VBox>
+      <Label layoutX="8.0" layoutY="225.0" text="Results:">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="resultId" layoutX="8.0" layoutY="247.0" prefHeight="150.0" prefWidth="562.0" AnchorPane.bottomAnchor="62.599999999999994" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="21.600000000000023" AnchorPane.topAnchor="246.99999999999997" />
+      <Button layoutX="154.0" layoutY="418.0" mnemonicParsing="false" onAction="#calculate" text="Calculate" AnchorPane.bottomAnchor="16.4" />
+      <Button layoutX="277.0" layoutY="418.0" mnemonicParsing="false" onAction="#setClose" text="Close" AnchorPane.bottomAnchor="16.4" />
+      <Button layoutX="392.0" layoutY="418.0" mnemonicParsing="false" onAction="#openResultWindow" text="openResultWindow" AnchorPane.bottomAnchor="16.4" />
+      <MenuBar prefHeight="26.0" prefWidth="580.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Clear">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#handleClearInitialAmount" text=" Initial amount" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleClearReturn" text="Return in %" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleClearAnnualCosts" text="✓ Annual costs" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleClearNumberOfYears" text="✓ Number of years" />
+                  <MenuItem mnemonicParsing="false" onAction="#clearValues" text="Clear values" />
+                  <MenuItem mnemonicParsing="false" onAction="#clearResults" text="Clear results" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="?">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#showHelp" text="Show help F1" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>
