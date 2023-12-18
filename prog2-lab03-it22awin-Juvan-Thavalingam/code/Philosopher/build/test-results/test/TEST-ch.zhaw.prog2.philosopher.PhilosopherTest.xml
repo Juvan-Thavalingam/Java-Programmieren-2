@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ch.zhaw.prog2.philosopher.PhilosopherTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-04-11T09:44:42" hostname="LAPTOP-3V8LK7IN" time="55.056">
+  <properties/>
+  <testcase name="testPhilosopherTable()" classname="ch.zhaw.prog2.philosopher.PhilosopherTest" time="55.056"/>
+  <system-out><![CDATA[Creating table (5 Philosophers, base time = 75ms )
+ ...Start deadlock watchdog ...
+Starting philosophers ...
+Starting Philosopher 4
+Starting Philosopher 0
+Starting Philosopher 2
+Starting Philosopher 1
+Starting Philosopher 3
+Stopping deadlock watchdog ...
+Stopping philosophers ...
+Final state: 
+PhilosopherTable { running = false
+  philosophers = [Philosopher {id=0, state=HUNGRY}, Philosopher {id=1, state=THINKING}, Philosopher {id=2, state=HUNGRY}, Philosopher {id=3, state=HUNGRY}, Philosopher {id=4, state=THINKING}]
+  forks = [Fork {id=0, state=OCCUPIED, owner=1}, Fork {id=1, state=FREE, owner=-1}, Fork {id=2, state=OCCUPIED, owner=2}, Fork {id=3, state=OCCUPIED, owner=4}, Fork {id=4, state=FREE, owner=-1}]
+}
+Detected at most 1 concurrent Philosophers acquiring forks
+Stopping Philosopher 4
+Stopping Philosopher 3
+Stopping Philosopher 2
+Stopping Philosopher 0
+Stopping Philosopher 1
+]]></system-out>
+  <system-err><![CDATA[Interrupted Philosopher {id=4, state=THINKING} : Interrupted release fork 3 - sleep interrupted
+Interrupted Philosopher {id=2, state=HUNGRY} : Interrupted fork delay - sleep interrupted
+Interrupted Philosopher {id=3, state=HUNGRY} : null
+Interrupted Philosopher {id=0, state=HUNGRY} : null
+Interrupted Philosopher {id=1, state=THINKING} : Interrupted fork delay - sleep interrupted
+]]></system-err>
+</testsuite>
